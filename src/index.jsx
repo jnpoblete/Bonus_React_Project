@@ -1,15 +1,15 @@
 import React, {Component} from 'react';
 import {render} from 'react-dom';
-import Products from './components/products.jsx';
+import {NotificationContainer, NotificationManager} from 'react-notifications';
 import axios from 'axios';
 
-class App extends Component {
+const cart = [];
 
+class App extends Component {
     constructor(props) {
         super(props);
         this.state = {
           products: [],
-          cart:[],
         };
         this.handleClick = this.handleClick.bind(this);
       }
@@ -41,11 +41,30 @@ class App extends Component {
       .catch(console.log)
     }
 
-
+    createNotification(type, mensaje){
+      console.log(type)
+      return () => {
+        switch (type) {
+          case 'info':
+            NotificationManager.info('Info message');
+            break;
+          case 'success':
+            NotificationManager.success('Success message', mensaje);
+            break;
+          case 'warning':
+            NotificationManager.warning('Warning message', 'Close after 3000ms', 3000);
+            break;
+          case 'error':
+            NotificationManager.error('Error message', 'Click me!', 5000, () => {
+              alert('callback');
+            });
+            break;
+        }
+      };
+    };    
     render() {
       return (
         <div>
-          <center><h1>Our Products</h1></center>
           {this.state.products.map((product) => (
             <div class="card">
               <div class="card-body">
@@ -56,20 +75,59 @@ class App extends Component {
               </div>
             </div>
           ))}
+
         </div>
       )
       }
 
       handleClick(item) {
-        this.setState({ cart: [...this.state.cart, item] })
+        cart.push(item);
         console.log("producto agreagado al carro", item.sku)
-        console.log(this.state.cart)
-      }
-      
+        console.log(cart)
+        this.createNotification('success', 'Product ' +item.name +' added to cart')()
+        render(
+          <App/>
+          ,document.getElementById('react-app')
+          
+        );
+      } 
   }
+  
+render(
+    <App/>,document.getElementById('react-app')
+    
+);
 
+
+
+class Carro extends Component {
+  constructor(props) {
+      super(props);
+      this.state = {
+        products: [],
+      };
+    }
+    render() {
+      return (
+        <div>
+          <NotificationContainer/>
+          {cart.map((product) => (
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">{product.name}</h5>
+                <h6 class="card-subtitle mb-2 text-muted">{product.sku}</h6>
+                <button> Sacar</button>
+              </div>
+            </div>
+          ))}
+
+        </div>
+      )
+      }
+
+}
 
 render(
-    <App/>
-    , document.getElementById('react-app')
+  <Carro/>,document.getElementById('boleta')
+  
 );
