@@ -17,7 +17,12 @@
 /* Control the right side */
 .right {
   right: 0;
+  padding: 2%;
   background-color: red;
+}
+
+h7{
+  float: right;
 }
 
 /* If you want the content centered horizontally and vertically */
@@ -33,4 +38,17 @@
 .centered img {
   width: 150px;
   border-radius: 50%;
+}
+
+.product{
+  border-style: solid;
+  padding:3%;
+}
+
+button{
+  border-left: 5%;
+}
+
+.hidde{
+  display: none;
 }

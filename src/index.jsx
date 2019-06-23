@@ -3,7 +3,7 @@ import {render} from 'react-dom';
 import {NotificationContainer, NotificationManager} from 'react-notifications';
 import axios from 'axios';
 
-const cart = [];
+var cart = [];
 
 class App extends Component {
     constructor(props) {
@@ -61,7 +61,9 @@ class App extends Component {
             break;
         }
       };
-    };    
+    };  
+    
+    
     render() {
       return (
         <div>
@@ -81,53 +83,50 @@ class App extends Component {
       }
 
       handleClick(item) {
+
         cart.push(item);
         console.log("producto agreagado al carro", item.sku)
         console.log(cart)
-        this.createNotification('success', 'Product ' +item.name +' added to cart')()
-        render(
-          <App/>
-          ,document.getElementById('react-app')
-          
-        );
+        this.createNotification('success', 'Product ' + item.name +' added to cart')()       
+        update_boleta(item)
       } 
   }
   
 render(
-    <App/>,document.getElementById('react-app')
-    
+    <App/>,document.getElementById('react-app')    
 );
 
 
 
-class Carro extends Component {
-  constructor(props) {
-      super(props);
-      this.state = {
-        products: [],
-      };
-    }
-    render() {
-      return (
-        <div>
-          <NotificationContainer/>
-          {cart.map((product) => (
-            <div class="card">
-              <div class="card-body">
-                <h5 class="card-title">{product.name}</h5>
-                <h6 class="card-subtitle mb-2 text-muted">{product.sku}</h6>
-                <button> Sacar</button>
-              </div>
-            </div>
-          ))}
-
-        </div>
-      )
+function update_boleta(){
+  var counts = {};
+  for (var i = 0; i < cart.length; i++) {
+    var num = cart[i].sku;
+    counts[num] = counts[num] ? counts[num] + 1 : 1;
+  }
+  var texto = "";
+  console.log(counts);
+  var doc = document.getElementById('boleta')
+  doc.innerHTML = "<h3>Boleta</h3>";
+  var total = 0;
+  var agregados = []
+  for (let index = 0; index < cart.length; index++) {
+    const product = cart[index];
+    if(!agregados.includes(product.sku)){
+      doc.innerHTML +='<div class="product"><h5 class="card-title">'+product.name+'</h5><h7>Cantidad: '+counts[product.sku]+'</h7><button onClick=sacar()> Sacar</button></div>'    
+      agregados.push(product.sku);
+      if(texto == ""){
+        texto += product.sku + ":" + counts[product.sku];
       }
-
+      else{
+        texto += ";" + product.sku + ":" + counts[product.sku];
+      }
+    }
+    total += product.price;
+  }
+  doc.innerHTML += "TOTAL = " + total
+  doc.innerHTML += "</br></br></br>"
+  doc.innerHTML += "<button onclick=pagar()> PAGAR </button>"
+  doc.innerHTML +="<h9 id='cart' class='hidde'>"+texto+"</h9>"
 }
 
-render(
-  <Carro/>,document.getElementById('boleta')
-  
-);
