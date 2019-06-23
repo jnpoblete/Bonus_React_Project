@@ -124,7 +124,7 @@ function update_boleta(){
     }
     total += product.price;
   }
-  doc.innerHTML += "TOTAL = " + total
+  doc.innerHTML += "<h4 id='total'>TOTAL = " + total + "</h4>"
   doc.innerHTML += "</br></br></br>"
   doc.innerHTML += "<button onclick=pagar()> PAGAR </button>"
   doc.innerHTML +="<h9 id='cart' class='hidde'>"+texto+"</h9>"
