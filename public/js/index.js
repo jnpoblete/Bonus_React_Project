@@ -25,24 +25,44 @@ async function crear_boleta(){
     console.log(client_name);
     url = "https://integracion-2019-dev.herokuapp.com/sii/boleta";
     body = {
-        "proveedor": id_productor,
-        "cliente":client_id,
-        "total":total,
+        'cliente':client_id,
+        'proveedor':id_productor,
+        'total':parseInt(total),
     };
-    var miInit = { 
-        method: 'POST',
-        headers:{    
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*' 
-            },
-            mode: 'cors',
-            cache: 'default',
-            json:body,
-    };
-    await axios.get(url, miInit)
+    // var miInit = { 
+    //     headers:{    
+    //             'Accept': 'application/json',
+    //             'Content-Type': 'application/json',
+    //             'Access-Control-Allow-Origin': '*' 
+    //         },
+    //         json:body,
+    // };
+    // headers={'Content-Type':'Aplication/json'};
+    // var bodyFormData = new FormData();
+    // bodyFormData.append('cliente', client_id);
+    // bodyFormData.append('proveedor', id_productor);
+    // bodyFormData.append('total', parseInt(total));
+    // var headerFormData = new FormData();
+    // headerFormData.append('Content-Type', 'application/x-www-form-urlencoded');
+    // console.log(bodyFormData);
+    // console.log(headerFormData);
+    const params = new URLSearchParams();
+    params.append('cliente', client_id);
+    params.append('proveedor', id_productor);
+    params.append('total', parseInt(total));      
+    const config = {
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+    }
+    console.log(requestBody);
+    console.log(config);
+    await axios.post(url, params, config)    
+    // await axios.post(url, body, {headers: headers})
     .then(response =>response.data)
     .then((data) => {
+        console.log("funciono");
+        console.log(data);
     })
     .catch(console.log)
 }
