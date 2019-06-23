@@ -4,6 +4,15 @@ const id_productor = '5cbd31b7c445af0004739beb';
 var apiKey = "R&FTHQi3AkqUx%6";
 var direction = "";
 var total = 0;
+var url_actual = window.location.href;
+const url_pago_dev = 'https://integracion-2019-dev.herokuapp.com';
+const url_pago_prod = 'https://integracion-2019-prod.herokuapp.com';
+var url_sitio_pago1 = "/web/pagoenlinea?callbackUrl=";
+const URL_OK = url_actual + "/postpago";
+const struct_fail = "&cancelUrl=";
+const URL_FAIL = url_actual + "/failpago"
+const boleta_id = "&boletaId=";
+var dev = true;
 
 function pagar(){
     var carro = document.getElementById("cart").textContent.split(";");
@@ -29,23 +38,6 @@ async function crear_boleta(){
         'proveedor':id_productor,
         'total':parseInt(total),
     };
-    // var miInit = { 
-    //     headers:{    
-    //             'Accept': 'application/json',
-    //             'Content-Type': 'application/json',
-    //             'Access-Control-Allow-Origin': '*' 
-    //         },
-    //         json:body,
-    // };
-    // headers={'Content-Type':'Aplication/json'};
-    // var bodyFormData = new FormData();
-    // bodyFormData.append('cliente', client_id);
-    // bodyFormData.append('proveedor', id_productor);
-    // bodyFormData.append('total', parseInt(total));
-    // var headerFormData = new FormData();
-    // headerFormData.append('Content-Type', 'application/x-www-form-urlencoded');
-    // console.log(bodyFormData);
-    // console.log(headerFormData);
     const params = new URLSearchParams();
     params.append('cliente', client_id);
     params.append('proveedor', id_productor);
@@ -55,16 +47,42 @@ async function crear_boleta(){
             'Content-Type': 'application/x-www-form-urlencoded'
         }
     }
-    console.log(requestBody);
-    console.log(config);
+    var doc_map = document.getElementById("map");
+    doc_map.style.backgroundColor = "white";
+    doc_map.innerHTML = "<h3 class='centered'> LOADING </h3>";
     await axios.post(url, params, config)    
     // await axios.post(url, body, {headers: headers})
     .then(response =>response.data)
     .then((data) => {
         console.log("funciono");
         console.log(data);
+        doc_map.innerHTML = "<h2> Tu Boleta </h2>";
+        doc_map.innerHTML += "<h4> Id: "+data['_id']+" </h4>";
+        doc_map.innerHTML += "<h4> Cliente: "+client_name+" </h4>";
+        doc_map.innerHTML += "<h4> Fecha Creacion: "+data['created_at']+" </h4>";
+        doc_map.innerHTML += "<h4> Bruto: $"+data['bruto']+" </h4>";
+        doc_map.innerHTML += "<h4> Iva: $"+data['iva']+" </h4>";
+        doc_map.innerHTML += "<h4> Total: $"+parseInt(total)+" </h4>";
+        doc_map.innerHTML += "<h4> Despachar a: "+direction+" </h4>";
+        var btn = document.getElementById("btn_pagar");
+        btn.style.display = 'none';
+        redirigi_pago(data['_id']);
+                
     })
     .catch(console.log)
+}
+
+
+function redirigi_pago(id_boleta){
+    var ulr_pagar = "";
+    if(dev){
+        ulr_pagar = url_pago_dev + url_sitio_pago1 + encodeURIComponent(URL_OK + '?id_boleta=' + id_boleta) + struct_fail +encodeURIComponent(URL_FAIL + '?id_boleta=' + id_boleta) + boleta_id + id_boleta;
+    }
+    else{
+        ulr_pagar = url_pago_prod + url_sitio_pago1 + encodeURIComponent(URL_OK + '?id_boleta=' + id_boleta) +struct_fail +encodeURIComponent(URL_FAIL + '?id_boleta=' + id_boleta) + boleta_id + id_boleta;
+    }
+    console.log(ulr_pagar);
+    location.replace(ulr_pagar);
 }
 
 function open_form(){
