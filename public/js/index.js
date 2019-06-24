@@ -1,6 +1,6 @@
 
 
-const id_productor = '5cbd31b7c445af0004739beb';
+
 var apiKey = "R&FTHQi3AkqUx%6";
 var direction = "";
 var total = 0;
@@ -10,10 +10,15 @@ const url_pago_prod = 'https://integracion-2019-prod.herokuapp.com';
 var url_sitio_pago1 = "/web/pagoenlinea?callbackUrl=";
 const URL_OK = url_actual + "/postpago";
 const struct_fail = "&cancelUrl=";
-const URL_FAIL = url_actual + "/failpago"
+const URL_FAIL = url_actual + "/close"
 const boleta_id = "&boletaId=";
-var dev = true;
-
+var dev = 'true';
+if(dev == 'true'){
+    const id_productor = '5cbd31b7c445af0004739beb';
+}
+else{
+    const id_productor = '5cc66e378820160004a4c3c4';
+}
 function pagar(){
     var carro = document.getElementById("cart").textContent.split(";");
     var counts  = {};
@@ -32,7 +37,12 @@ async function crear_boleta(){
     console.log(total);
     console.log(client_id);
     console.log(client_name);
+    if(dev == "true"){
     url = "https://integracion-2019-dev.herokuapp.com/sii/boleta";
+    }
+    else{
+        url = "https://integracion-2019-prod.herokuapp.com/sii/boleta"
+    }
     body = {
         'cliente':client_id,
         'proveedor':id_productor,
@@ -50,6 +60,7 @@ async function crear_boleta(){
     var doc_map = document.getElementById("map");
     doc_map.style.backgroundColor = "white";
     doc_map.innerHTML = "<h3 class='centered'> LOADING </h3>";
+    console.log("CART ", document.getElementById("cart").textContent);
     await axios.post(url, params, config)    
     // await axios.post(url, body, {headers: headers})
     .then(response =>response.data)
@@ -66,23 +77,25 @@ async function crear_boleta(){
         doc_map.innerHTML += "<h4> Despachar a: "+direction+" </h4>";
         var btn = document.getElementById("btn_pagar");
         btn.style.display = 'none';
-        redirigi_pago(data['_id']);
+        redirigi_pago(data['_id'], data['oc'], client_id);
                 
     })
     .catch(console.log)
 }
 
 
-function redirigi_pago(id_boleta){
+function redirigi_pago(id_boleta, oc, client_id){
     var ulr_pagar = "";
-    if(dev){
-        ulr_pagar = url_pago_dev + url_sitio_pago1 + encodeURIComponent(URL_OK + '?id_boleta=' + id_boleta) + struct_fail +encodeURIComponent(URL_FAIL + '?id_boleta=' + id_boleta) + boleta_id + id_boleta;
+    var ok = '&id_boleta=' + id_boleta +'&cart='+ document.getElementById("cart").textContent +'&total='+parseInt(total)+'&oc='+oc + "&almacen_id="+client_id;
+    if(dev == "true"){
+        ulr_pagar = url_pago_dev + url_sitio_pago1 + encodeURIComponent(URL_OK + ok) + struct_fail +encodeURIComponent(URL_FAIL) + boleta_id + id_boleta;
     }
     else{
-        ulr_pagar = url_pago_prod + url_sitio_pago1 + encodeURIComponent(URL_OK + '?id_boleta=' + id_boleta) +struct_fail +encodeURIComponent(URL_FAIL + '?id_boleta=' + id_boleta) + boleta_id + id_boleta;
+        ulr_pagar = url_pago_prod + url_sitio_pago1 + encodeURIComponent(URL_OK + ok) +struct_fail +encodeURIComponent(URL_FAIL) + boleta_id + id_boleta;
     }
     console.log(ulr_pagar);
-    location.replace(ulr_pagar);
+    var win = window.open(url_pagar, '_blank');
+    win.focus();
 }
 
 function open_form(){

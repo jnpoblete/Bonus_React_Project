@@ -1,0 +1,40 @@
+
+.msg{
+    border: 5px;
+    border-style: solid;
+    padding: 50px;
+    margin-top: 100px;
+    margin-left: 100px;
+    margin-right: 100px;
+    text-align: center;
+  }
+
+  .alert-message
+  {
+      margin: 50px;
+      padding: 20px;
+      border-left: 3px solid #eee;
+  }
+  .alert-message h4
+  {
+      margin-top: 0;
+      margin-bottom: 5px;
+  }
+  .alert-message p:last-child
+  {
+      margin-bottom: 0;
+  }
+  .alert-message code
+  {
+      background-color: #fff;
+      border-radius: 3px;
+  }
+  .alert-message-success
+  {
+      background-color: #F4FDF0;
+      border-color: #3C763D;
+  }
+  .alert-message-success h4
+  {
+      color: #3C763D;
+  }

@@ -18,7 +18,8 @@
 .right {
   right: 0;
   padding: 2%;
-  background-color: red;
+  background-color: rgb(30, 136, 197);
+  color: #f1f1f1;
 }
 
 h7{
@@ -126,3 +127,5 @@ button{
   width: 600px;
   float: left;
 }
+
+
