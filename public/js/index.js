@@ -1,6 +1,4 @@
 
-
-
 var apiKey = "R&FTHQi3AkqUx%6";
 var direction = "";
 var total = 0;
@@ -8,17 +6,15 @@ var url_actual = window.location.href;
 const url_pago_dev = 'https://integracion-2019-dev.herokuapp.com';
 const url_pago_prod = 'https://integracion-2019-prod.herokuapp.com';
 var url_sitio_pago1 = "/web/pagoenlinea?callbackUrl=";
-const URL_OK = url_actual + "/postpago";
+const URL_OK = url_actual + "postpago";
 const struct_fail = "&cancelUrl=";
-const URL_FAIL = url_actual + "/close"
+const URL_FAIL = url_actual + "close"
 const boleta_id = "&boletaId=";
 var dev = 'true';
+var id_productor = '5cc66e378820160004a4c3c4';
 if(dev == 'true'){
-    const id_productor = '5cbd31b7c445af0004739beb';
-}
-else{
-    const id_productor = '5cc66e378820160004a4c3c4';
-}
+    id_productor = '5cbd31b7c445af0004739beb';
+}  
 function pagar(){
     var carro = document.getElementById("cart").textContent.split(";");
     var counts  = {};
@@ -29,7 +25,8 @@ function pagar(){
     open_form();
     console.log(counts);
 }
-
+var doc_map = document.getElementById("map");
+var datos_boleta = "";
 async function crear_boleta(){
     var client_id = document.getElementById("client_id").value;
     var client_name = document.getElementById("client_name").value;
@@ -37,11 +34,9 @@ async function crear_boleta(){
     console.log(total);
     console.log(client_id);
     console.log(client_name);
+    url = "https://integracion-2019-prod.herokuapp.com/sii/boleta"
     if(dev == "true"){
     url = "https://integracion-2019-dev.herokuapp.com/sii/boleta";
-    }
-    else{
-        url = "https://integracion-2019-prod.herokuapp.com/sii/boleta"
     }
     body = {
         'cliente':client_id,
@@ -57,7 +52,7 @@ async function crear_boleta(){
             'Content-Type': 'application/x-www-form-urlencoded'
         }
     }
-    var doc_map = document.getElementById("map");
+
     doc_map.style.backgroundColor = "white";
     doc_map.innerHTML = "<h3 class='centered'> LOADING </h3>";
     console.log("CART ", document.getElementById("cart").textContent);
@@ -66,34 +61,48 @@ async function crear_boleta(){
     .then(response =>response.data)
     .then((data) => {
         console.log("funciono");
-        console.log(data);
-        doc_map.innerHTML = "<h2> Tu Boleta </h2>";
-        doc_map.innerHTML += "<h4> Id: "+data['_id']+" </h4>";
-        doc_map.innerHTML += "<h4> Cliente: "+client_name+" </h4>";
-        doc_map.innerHTML += "<h4> Fecha Creacion: "+data['created_at']+" </h4>";
-        doc_map.innerHTML += "<h4> Bruto: $"+data['bruto']+" </h4>";
-        doc_map.innerHTML += "<h4> Iva: $"+data['iva']+" </h4>";
-        doc_map.innerHTML += "<h4> Total: $"+parseInt(total)+" </h4>";
-        doc_map.innerHTML += "<h4> Despachar a: "+direction+" </h4>";
-        var btn = document.getElementById("btn_pagar");
-        btn.style.display = 'none';
-        redirigi_pago(data['_id'], data['oc'], client_id);
-                
+       datos_boleta = data;
+        render_pre_boleta();
     })
     .catch(console.log)
 }
 
 
+function render_pre_boleta(){
+    var data = datos_boleta;
+    doc_map.innerHTML = "<h2> Pre-Boleta </h2>";
+    doc_map.innerHTML += "<h4> Id: "+data['_id']+" </h4>";
+    doc_map.innerHTML += "<h4> Cliente: "+client_name+" </h4>";
+    doc_map.innerHTML += "<h4> Fecha Creacion: "+data['created_at']+" </h4>";
+    doc_map.innerHTML += "<h4> Bruto: $"+data['bruto']+" </h4>";
+    doc_map.innerHTML += "<h4> Iva: $"+data['iva']+" </h4>";
+    doc_map.innerHTML += "<h4> Total: $"+parseInt(total)+" </h4>";
+    doc_map.innerHTML += "<h4> Despachar a: "+direction+" </h4>";
+    var btn = document.getElementById("btn_pagar");
+    btn.style.display = 'none';
+    doc_map.innerHTML += "<br></br>";
+    doc_map.innerHTML += "<h3 id='redirigiendo'>REDIRIGIENDO...</h3>";
+    doc_map.innerHTML += "<button type='button' id='btn_reintentar' class='btn' onclick='crear_boleta()'>Reintentar Pago</button>";
+    doc_map.innerHTML += "<div id='loader' class='loader'></div>"
+    document.getElementById('btn_reintentar').style.display = 'none';
+    sleep(3000).then(() => {
+        document.getElementById('loader').style.display = 'none';
+        document.getElementById('redirigiendo').style.display = 'none';
+        document.getElementById('btn_reintentar').style.display = 'block';
+        redirigi_pago(data['_id'], data['oc'], client_id);       
+    });              
+}
+
+
 function redirigi_pago(id_boleta, oc, client_id){
-    var ulr_pagar = "";
+    var url_pagar = "";
     var ok = '&id_boleta=' + id_boleta +'&cart='+ document.getElementById("cart").textContent +'&total='+parseInt(total)+'&oc='+oc + "&almacen_id="+client_id;
+    url_pagar = url_pago_prod + url_sitio_pago1 + encodeURIComponent(URL_OK + ok) +struct_fail +encodeURIComponent(URL_FAIL) + boleta_id + id_boleta;
     if(dev == "true"){
-        ulr_pagar = url_pago_dev + url_sitio_pago1 + encodeURIComponent(URL_OK + ok) + struct_fail +encodeURIComponent(URL_FAIL) + boleta_id + id_boleta;
+        url_pagar = url_pago_dev + url_sitio_pago1 + encodeURIComponent(URL_OK + ok) + struct_fail +encodeURIComponent(URL_FAIL) + boleta_id + id_boleta;
     }
-    else{
-        ulr_pagar = url_pago_prod + url_sitio_pago1 + encodeURIComponent(URL_OK + ok) +struct_fail +encodeURIComponent(URL_FAIL) + boleta_id + id_boleta;
-    }
-    console.log(ulr_pagar);
+
+    console.log(url_pagar);
     var win = window.open(url_pagar, '_blank');
     win.focus();
 }
@@ -161,3 +170,10 @@ map.on('click', function(evt){
 });
 
 }
+
+
+
+// sleep time expects milliseconds
+function sleep (time) {
+    return new Promise((resolve) => setTimeout(resolve, time));
+  }
