@@ -38,7 +38,7 @@ async function crear_orden(cart, oc, client_id){
     var array = cart.split(";");
     for (let index = 0; index < array.length; index++) {
         var elem = array[index].split(":")
-        const params = {'sku':elem[0], 'cantidad':elem[1], 'almacenId': client_id, 'oc': oc}
+        const params = {'sku':elem[0], 'cantidad':parseInt(elem[1]), 'almacenId': client_id, 'oc': oc}
         // const params = new URLSearchParams();
         // console.log("SKU: ", elem[0]);
         // console.log("CANTIDAD: ", elem[1]);
