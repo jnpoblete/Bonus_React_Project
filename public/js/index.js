@@ -10,7 +10,7 @@ const URL_OK = url_actual + "postpago";
 const struct_fail = "&cancelUrl=";
 const URL_FAIL = url_actual + "close"
 const boleta_id = "&boletaId=";
-var dev = 'true';
+var dev = 'false';
 var id_productor = '5cc66e378820160004a4c3c4';
 if(dev == 'true'){
     id_productor = '5cbd31b7c445af0004739beb';
@@ -27,12 +27,15 @@ function pagar(){
 }
 var doc_map = document.getElementById("map");
 var datos_boleta = "";
+var client_name = "";
+var client_id = "";
 async function crear_boleta(){
-    var client_id = document.getElementById("client_id").value;
-    var client_name = document.getElementById("client_name").value;
+    client_id = document.getElementById("client_id").value;
+    client_name = document.getElementById("client_name").value;
     total = document.getElementById('total').textContent.split("=")[1];
     console.log(total);
     console.log(client_id);
+    console.log('name');
     console.log(client_name);
     url = "https://integracion-2019-prod.herokuapp.com/sii/boleta"
     if(dev == "true"){
@@ -89,6 +92,8 @@ function render_pre_boleta(){
         document.getElementById('loader').style.display = 'none';
         document.getElementById('redirigiendo').style.display = 'none';
         document.getElementById('btn_reintentar').style.display = 'block';
+        console.log("----------" + data['oc']);
+        console.log("----------" + client_id);
         redirigi_pago(data['_id'], data['oc'], client_id);       
     });              
 }

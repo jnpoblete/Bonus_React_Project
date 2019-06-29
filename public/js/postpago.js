@@ -30,7 +30,7 @@ function load(){
 }
 
 async function crear_orden(cart, oc, client_id){
-    url = "http://tuerca9.ing.puc.cl/orders";
+    url = "http://tuerca9.ing.puc.cl/orders2";
     //UNA ORDEN POR SKU
     // CART DEL TIPO 20003:2;10001:1
     var array = cart.split(";");
