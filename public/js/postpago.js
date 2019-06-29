@@ -1,5 +1,3 @@
-
-
 function load(){
     var actual_url = window.location.href;
     var datos_url = actual_url.split('&');
