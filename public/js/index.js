@@ -10,7 +10,7 @@ const URL_OK = url_actual + "postpago";
 const struct_fail = "&cancelUrl=";
 const URL_FAIL = url_actual + "close"
 const boleta_id = "&boletaId=";
-var dev = 'false';
+var dev = 'true';
 var id_productor = '5cc66e378820160004a4c3c4';
 if(dev == 'true'){
     id_productor = '5cbd31b7c445af0004739beb';
@@ -63,7 +63,9 @@ async function crear_boleta(){
     // await axios.post(url, body, {headers: headers})
     .then(response =>response.data)
     .then((data) => {
+        // console.log(url);
         console.log("funciono");
+        // console.log(data);
        datos_boleta = data;
         render_pre_boleta();
     })
