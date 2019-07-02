@@ -18,8 +18,8 @@ class App extends Component {
     componentDidMount() {
       var headerss = new Headers();
       headerss.append("group", "9");
-      headerss.append('Access-Control-Allow-Origin', 'http://tuerca9.ing.puc.cl');
-      // headerss.append('Access-Control-Allow-Origin', 'http://localhost:3000');
+      //headerss.append('Access-Control-Allow-Origin', 'http://tuerca9.ing.puc.cl');
+      //headerss.append('Access-Control-Allow-Origin', 'http://localhost:3000');
       headerss.append('Access-Control-Allow-Methods', 'POST, GET, OPTIONS, PUT, DELETE');
       headerss.append('Access-Control-Allow-Headers', 'Origin, Content-Type, Accept, Authorization, X- Request-With');
       var miInit = { method: 'GET',
