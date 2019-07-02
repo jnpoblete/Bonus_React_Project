@@ -35,6 +35,7 @@ async function crear_boleta(){
     total = document.getElementById('total').textContent.split("=")[1];
     console.log(total);
     console.log(client_id);
+    console.log(id_productor);
     console.log('name');
     console.log(client_name);
     url = "https://integracion-2019-prod.herokuapp.com/sii/boleta"
@@ -59,17 +60,25 @@ async function crear_boleta(){
     doc_map.style.backgroundColor = "white";
     doc_map.innerHTML = "<h3 class='centered'> LOADING </h3>";
     console.log("CART ", document.getElementById("cart").textContent);
-    await axios.post(url, params, config)    
-    // await axios.post(url, body, {headers: headers})
-    .then(response =>response.data)
-    .then((data) => {
-        // console.log(url);
-        console.log("funciono");
-        // console.log(data);
-       datos_boleta = data;
-        render_pre_boleta();
-    })
-    .catch(console.log)
+    var aux = 0;
+    while(aux < 20){
+        aux++;
+        await axios.post(url, params, config)    
+        // await axios.post(url, body, {headers: headers})
+        .then(response =>response.data)
+        .then((data) => {
+            console.log(data['bruto']);
+            if(data['bruto']){
+                aux = 25;
+            }
+            datos_boleta = data;
+            console.log("funciono");
+            // console.log(data);
+        })
+        .catch(console.log)
+    }
+   
+    render_pre_boleta();
 }
 
 
